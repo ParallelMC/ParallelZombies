@@ -1,0 +1,11 @@
+name: "ZombieApocalypse"
+version: "1.0"
+main: parallelmc.pz.ParallelZombies
+api-version: 1.19
+author: EBro912
+description: A Zombie Apocalypse plugin for Parallel events
+commands:
+  startgame:
+    description: Force starts the game
+    usage: /startgame
+    default: op
