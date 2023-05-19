@@ -143,10 +143,10 @@ public class ZombiesPlayer {
         bossBar.progress(1f);
         player.showBossBar(bossBar);
         new BukkitRunnable() {
-            int cooldown = 8;
+            int cooldown = 80;
             @Override
             public void run() {
-                bossBar.progress(cooldown / 8f);
+                bossBar.progress(cooldown / 80f);
                 if (cooldown <= 0) {
                     leapCooldown = false;
                     player.hideBossBar(bossBar);
@@ -154,7 +154,7 @@ public class ZombiesPlayer {
                 }
                 cooldown--;
             }
-        }.runTaskTimer(ParallelZombies.gameManager.getPlugin(), 0L, 20L);
+        }.runTaskTimer(ParallelZombies.gameManager.getPlugin(), 0L, 2L);
     }
 
     private ItemStack unbreakableItem(Material material) {
