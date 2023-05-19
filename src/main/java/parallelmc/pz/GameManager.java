@@ -1,5 +1,6 @@
 package parallelmc.pz;
 
+import com.mojang.datafixers.util.Pair;
 import me.libraryaddict.disguise.DisguiseAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,9 +13,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import static parallelmc.pz.utils.ZombieUtils.weightedChoice;
 
 public class GameManager {
     private final Plugin plugin;
@@ -111,7 +116,7 @@ public class GameManager {
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 0));
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
         zombie.setShouldBurnInDay(false);
-        zombie.setTarget(getRandomSurvivor());
+        zombie.setTarget(getRandomSurvivorByDistance(zombie));
     }
 
     private void endGame() {
@@ -162,6 +167,37 @@ public class GameManager {
             return null;
         }
         return target.getMcPlayer();
+    }
+
+    /**
+     * Find a 'random' {@link Player survivor}, but prioritize close {@link Player survivors}.
+     * <p>
+     * <i>This is to include some element of randomness for the {@link Zombie zombies'} targeting,
+     * but to not make it absurd where the {@link Zombie zombies} will keep targeting {@link Player survivors}
+     * across the map</i>
+     */
+    public Player getRandomSurvivorByDistance(Zombie zombie){
+        List<ZombiesPlayer> targets = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).toList();
+        ArrayList<Pair<Player, Integer>> arr = new ArrayList<>();
+
+        for (ZombiesPlayer player: targets) {
+            double distance = zombie.getLocation().distance(player.getMcPlayer().getLocation());
+            // don't include targets over a certain distance away (100 for testing)
+            if(distance < 100){
+                // convert shorter distances to be higher weights
+                int weight = (int) ((1./distance) * 100);
+
+                arr.add(new Pair<>(player.getMcPlayer(), weight));
+            }
+        }
+
+        if (arr.size() == 0){
+            ParallelZombies.log(Level.WARNING, "Failed to find a target for zombie spawn.");
+            return null;
+        }
+
+        return weightedChoice(arr);
+
     }
 
     public ZombiesPlayer getPlayer(Player player) { return players.get(player.getUniqueId()); }
