@@ -177,7 +177,7 @@ public class GameManager {
      * across the map</i>
      */
     public Player getRandomSurvivorByDistance(Zombie zombie){
-        List<ZombiesPlayer> targets = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).toList();
+        List<ZombiesPlayer> targets = players.values().stream().filter(x -> x.getTeam() == Team.ZOMBIE).toList();
         ArrayList<Pair<Player, Integer>> arr = new ArrayList<>();
 
         for (ZombiesPlayer player: targets) {
@@ -187,14 +187,18 @@ public class GameManager {
                 // convert shorter distances to be higher weights
                 int weight = (int) ((1./distance) * 100);
 
-                arr.add(new Pair<>(player.getMcPlayer(), weight));
+                arr.add(new Pair<>(player.getMcPlayer(), Math.min(weight, 500)));
             }
         }
 
         if (arr.size() == 0){
-            ParallelZombies.log(Level.WARNING, "Failed to find a target for zombie spawn.");
+            ParallelZombies.log(Level.WARNING, String.format("Failed to find a target for zombie %s spawn.", zombie.getUniqueId()));
             return null;
         }
+
+        ParallelZombies.log(Level.FINER,
+                String.format("Zombie %s Targets: %s", String.valueOf(zombie.getUniqueId()), arr)
+                );
 
         return weightedChoice(arr);
 

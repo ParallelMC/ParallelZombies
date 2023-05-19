@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import static parallelmc.pz.utils.ZombieUtils.createMessage;
 
 public class ParallelZombies extends JavaPlugin {
-    public static Level LOG_LEVEL = Level.INFO;
+    public static Level LOG_LEVEL = Level.FINER;//Level.INFO;
     public static GameManager gameManager;
 
     @Override
