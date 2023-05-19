@@ -16,7 +16,7 @@ public class OnPlayerJoin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         // TODO: handle joining during a game
         Player p = event.getPlayer();
-        p.setGameMode(GameMode.SURVIVAL);
+        p.setGameMode(GameMode.ADVENTURE);
         p.getInventory().clear();
         for (PotionEffect e : p.getActivePotionEffects()) {
             p.removePotionEffect(e.getType());

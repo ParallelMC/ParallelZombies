@@ -80,8 +80,8 @@ public class ZombiesPlayer {
             WitherSkeleton sk = (WitherSkeleton)p.getWorld().spawnEntity(p.getLocation(), EntityType.WITHER_SKELETON);
             sk.setAI(false);
             sk.setGravity(false);
+            sk.getEquipment().setItemInMainHand(new ItemStack(Material.STONE_AXE));
             sk.damage(20D);
-            sk.getWorld().playSound(p.getLocation(), "entity.wither_skeleton.death", 1, 1);
             player.teleport(ParallelZombies.gameManager.map.getZombieSpawnPoint());
         }
         else {

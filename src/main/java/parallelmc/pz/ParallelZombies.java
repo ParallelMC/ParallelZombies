@@ -67,6 +67,7 @@ public class ParallelZombies extends JavaPlugin {
         world.setGameRule(GameRule.DO_TILE_DROPS, false);
         // keep inv makes it easier to respawn zombies
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
+        world.setGameRule(GameRule.DO_MOB_LOOT, false);
     }
 
     @Override
