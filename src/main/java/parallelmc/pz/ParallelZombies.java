@@ -1,6 +1,5 @@
 package parallelmc.pz;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
@@ -10,11 +9,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import parallelmc.pz.commands.*;
+import parallelmc.pz.commands.StartGame;
 import parallelmc.pz.events.*;
 
 import java.io.File;
 import java.util.logging.Level;
+
+import static parallelmc.pz.utils.ZombieUtils.createMessage;
 
 public class ParallelZombies extends JavaPlugin {
     public static Level LOG_LEVEL = Level.INFO;
@@ -78,8 +79,11 @@ public class ParallelZombies extends JavaPlugin {
     public static void log(Level level, String message) { Bukkit.getLogger().log(level, "[ParallelZombies] " + message); }
 
     public static void sendMessageTo(Player player, String message) {
-        Component msg = Component.text("§3[§f§lZombies§3] §a" + message);
-        player.sendMessage(msg);
+        player.sendMessage(createMessage(message));
+    }
+
+    public static void sendActionBarTo(Player player, String message){
+        player.sendActionBar(createMessage(message));
     }
 
     public static void sendMessage(String message) {

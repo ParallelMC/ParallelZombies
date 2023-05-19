@@ -67,7 +67,7 @@ public class ZombiesPlayer {
     public void updateEndingBoard(int countdown) {
         this.board.updateLines(
                 "",
-                "§Returning to lobby in:",
+                "Returning to lobby in:",
                 countdown + " seconds"
         );
     }
