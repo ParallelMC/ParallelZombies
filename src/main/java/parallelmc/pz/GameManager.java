@@ -3,8 +3,13 @@ package parallelmc.pz;
 import me.libraryaddict.disguise.DisguiseAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -95,6 +100,18 @@ public class GameManager {
                 endGame();
             }
         }, 0L, 1L);
+
+        this.plugin.getServer().getScheduler().runTaskTimer(plugin, this::spawnZombie, 0L, 200L);
+    }
+
+    private void spawnZombie() {
+        Location spawnPos = map.getZombieSpawnPoint();
+        Zombie zombie = (Zombie)map.world.spawnEntity(spawnPos, EntityType.ZOMBIE);
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0));
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 0));
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
+        zombie.setShouldBurnInDay(false);
+        zombie.setTarget(getRandomSurvivor());
     }
 
     private void endGame() {
@@ -136,6 +153,15 @@ public class GameManager {
         ZombiesPlayer pl = getPlayer(player);
         pl.deleteBoard();
         players.remove(player.getUniqueId());
+    }
+
+    public Player getRandomSurvivor() {
+        ZombiesPlayer target = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).skip((int) (players.size() * Math.random())).findFirst().orElse(null);
+        if (target == null) {
+            ParallelZombies.log(Level.WARNING, "Failed to find target for zombie spawn.");
+            return null;
+        }
+        return target.getMcPlayer();
     }
 
     public ZombiesPlayer getPlayer(Player player) { return players.get(player.getUniqueId()); }

@@ -22,7 +22,7 @@ public class OnRightClick implements Listener {
                     return;
                 }
                 if (player.getInventory().getItemInMainHand().getType() == Material.STONE_AXE) {
-                    player.setVelocity(player.getLocation().getDirection().normalize());
+                    player.setVelocity(player.getLocation().getDirection().normalize().multiply(1.5f));
                     ParallelZombies.sendMessageTo(player, "You used Leap!");
                     pl.startLeapCooldown();
                 }

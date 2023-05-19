@@ -95,6 +95,8 @@ public class ZombiesPlayer {
         disguise.setEntity(player);
         LivingWatcher watcher = disguise.getWatcher();
         watcher.setItemInMainHand(new ItemStack(Material.STONE_AXE));
+        watcher.setCustomName("§c" + player.getName());
+        watcher.setCustomNameVisible(true);
         disguise.startDisguise();
         equipZombie();
         this.team = Team.ZOMBIE;
