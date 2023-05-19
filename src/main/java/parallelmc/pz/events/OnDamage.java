@@ -21,6 +21,13 @@ public class OnDamage implements Listener {
             ZombiesPlayer pl = ParallelZombies.gameManager.getPlayer(player);
             if (pl.getTeam() == Team.SPECTATOR) {
                 event.setCancelled(true);
+                return;
+            }
+
+            if (player.getHealth() - event.getFinalDamage() <= 0D) {
+                event.setCancelled(true);
+                pl.handleDeath();
+                ParallelZombies.sendMessageTo(player, "You died.");
             }
         }
     }

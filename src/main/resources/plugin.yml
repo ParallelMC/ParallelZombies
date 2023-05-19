@@ -1,4 +1,4 @@
-name: "ZombieApocalypse"
+name: "ParallelZombies"
 version: "1.0"
 main: parallelmc.pz.ParallelZombies
 api-version: 1.19

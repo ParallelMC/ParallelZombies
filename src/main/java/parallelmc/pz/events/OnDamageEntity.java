@@ -30,8 +30,10 @@ public class OnDamageEntity implements Listener {
             }
 
             if (victim.getHealth() - event.getFinalDamage() <= 0D) {
-                // TODO: handle deaths
                 event.setCancelled(true);
+                plv.handleDeath();
+                ParallelZombies.sendMessageTo(attacker, "You killed " + victim.getName());
+                ParallelZombies.sendMessageTo(victim, "You were killed by " + attacker.getName());
             }
         }
     }

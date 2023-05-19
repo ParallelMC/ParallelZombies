@@ -7,6 +7,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class OnInventoryClick implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        event.setCancelled(true);
+        if (!event.getWhoClicked().isOp()) {
+            event.setCancelled(true);
+        }
     }
 }

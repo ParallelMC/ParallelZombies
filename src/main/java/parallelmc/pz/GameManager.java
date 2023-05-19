@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -14,10 +15,12 @@ public class GameManager {
     private final Plugin plugin;
     private final HashMap<UUID, ZombiesPlayer> players = new HashMap<>();
     public GameState gameState;
+    public ZombiesMap map;
 
-    public GameManager(Plugin plugin) {
+    public GameManager(Plugin plugin, ZombiesMap map) {
         this.plugin = plugin;
         this.gameState = GameState.PREGAME;
+        this.map = map;
         doPregame();
     }
 
@@ -47,6 +50,7 @@ public class GameManager {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         players.forEach((p, z) -> {
             z.equipSurvivor();
+            z.getMcPlayer().teleport(map.getPlayerSpawnPoint());
         });
         this.gameState = GameState.STARTING;
         new BukkitRunnable() {
