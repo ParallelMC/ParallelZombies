@@ -5,12 +5,30 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.TreeMap;
 
 public class ZombieUtils {
+
+    public static final Random rng = new Random();
+    // TEXT
+    public static TextComponent messagePrefix = Component.text('[')
+            .color(NamedTextColor.AQUA)
+            .append(Component.text("Zombies")
+                    .color(NamedTextColor.WHITE)
+                    .decoration(TextDecoration.BOLD, true)
+            )
+            .append(Component.text(']'))
+            .append(Component.text(' '));
+
+    public static TextComponent createMessage(String message){
+        return messagePrefix
+                .append(Component.text(message).color(NamedTextColor.GREEN));
+    }
+
     /**
      * Weighted Randomizer
      * @param values An {@link ArrayList} of {@link Pair Pairs} of {@link T} & it's {@link Integer weight}
@@ -29,17 +47,18 @@ public class ZombieUtils {
         return map.ceilingEntry(rng.nextInt(t) + 1).getValue();
     }
 
-    public static TextComponent messagePrefix = Component.text('[')
-            .color(NamedTextColor.AQUA)
-            .append(Component.text("Zombies")
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.BOLD, true)
-            )
-            .append(Component.text(']'))
-            .append(Component.text(' '));
+    /**
+     * Get a random location in a {@link Double radius} from the {@link Location center}
+     * @param center The center {@link Location} of the spawn circle
+     * @param radius The maximum {@link Double radius} to choose from
+     * @return {@link Location}
+     */
+    public static Location getRandomLocationInRadius(Location center, double radius){
 
-    public static TextComponent createMessage(String message){
-        return messagePrefix
-                .append(Component.text(message).color(NamedTextColor.GREEN));
+        double x = rng.nextDouble(-radius, radius);
+        double z = rng.nextDouble(-radius, radius);
+
+        return center.add(x, 0, z);
     }
+
 }
