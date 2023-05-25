@@ -14,7 +14,6 @@ import java.util.TreeMap;
 public class ZombieUtils {
 
     public static final Random rng = new Random();
-    // TEXT
     public static TextComponent messagePrefix = Component.text('[')
             .color(NamedTextColor.AQUA)
             .append(Component.text("Zombies")
@@ -24,6 +23,9 @@ public class ZombieUtils {
             .append(Component.text(']'))
             .append(Component.text(' '));
 
+	/**
+	 * Creates a text component, making the message green and prefixing it with the [Zombies] prefix
+	 */
     public static TextComponent createMessage(String message){
         return messagePrefix
                 .append(Component.text(message).color(NamedTextColor.GREEN));

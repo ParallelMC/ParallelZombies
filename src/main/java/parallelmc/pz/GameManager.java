@@ -177,7 +177,7 @@ public class GameManager {
      * across the map</i>
      */
     public Player getRandomSurvivorByDistance(Zombie zombie){
-        List<ZombiesPlayer> targets = players.values().stream().filter(x -> x.getTeam() == Team.ZOMBIE).toList();
+        List<ZombiesPlayer> targets = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).toList();
         ArrayList<Pair<Player, Integer>> arr = new ArrayList<>();
 
         for (ZombiesPlayer player: targets) {
