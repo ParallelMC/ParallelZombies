@@ -1,5 +1,7 @@
 package parallelmc.pz.events;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,12 +20,20 @@ public class OnRightClick implements Listener {
                 event.setCancelled(true);
                 ZombiesPlayer pl = ParallelZombies.gameManager.getPlayer(player);
                 if (pl.isLeapCooldown()) {
-                    ParallelZombies.sendMessageTo(player, "Your Leap is on cooldown!");
+                    ParallelZombies.sendActionBarTo(player, "Your Leap is on cooldown!");
+                    player.playSound(
+                            Sound.sound(Key.key("ui.toast.in"),
+                                    Sound.Source.MASTER, 0.5f, 0.9f)
+                    );
                     return;
                 }
                 if (player.getInventory().getItemInMainHand().getType() == Material.STONE_AXE) {
                     player.setVelocity(player.getLocation().getDirection().normalize().multiply(1.5f));
-                    ParallelZombies.sendMessageTo(player, "You used Leap!");
+                    ParallelZombies.sendActionBarTo(player, "You used Leap!");
+                    player.playSound(
+                            Sound.sound(Key.key("item.trident.riptide_1"),
+                                    Sound.Source.MASTER, 0.5f, 0.9f)
+                    );
                     pl.startLeapCooldown();
                 }
             }

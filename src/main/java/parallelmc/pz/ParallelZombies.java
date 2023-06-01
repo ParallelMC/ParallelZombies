@@ -1,30 +1,30 @@
 package parallelmc.pz;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import parallelmc.pz.commands.*;
+import parallelmc.pz.commands.StartGame;
 import parallelmc.pz.events.*;
 
-import java.io.File;
 import java.util.logging.Level;
 
+import static parallelmc.pz.utils.ZombieUtils.createMessage;
+
 public class ParallelZombies extends JavaPlugin {
-    public static Level LOG_LEVEL = Level.INFO;
+    public static Level LOG_LEVEL = Level.FINER;//Level.INFO;
     public static GameManager gameManager;
+
+    public static ParallelZombies instance;
 
     @Override
     public void onLoad() { }
 
     @Override
     public void onEnable() {
+        instance = this;
         PluginManager manager = Bukkit.getPluginManager();
 
         manager.registerEvents(new OnBlockBreak(), this);
@@ -39,27 +39,21 @@ public class ParallelZombies extends JavaPlugin {
 
         this.getCommand("startgame").setExecutor(new StartGame());
 
-        // TODO: support loading multiple maps
+        // todo: this should be dynamic
         World world = this.getServer().getWorld("world");
         if (world == null) {
             log(Level.SEVERE, "Could not find map world!");
             return;
         }
 
-        FileConfiguration config = new YamlConfiguration();
-        try {
-            config.load(new File(this.getDataFolder(), "map.yml"));
-        } catch (Exception e) {
-            ParallelZombies.log(Level.WARNING, "Failed to load map");
-            ParallelZombies.log(Level.WARNING, e.toString());
+        ZombiesMap map = ZombiesMap.loadFromConfig("map.yml");
+
+        if (map == null){
+            log("An error occurred loading map.");
             return;
         }
-        ZombiesMap map = new ZombiesMap(
-                "map",
-                world,
-                new Location(world, config.getDouble("players.x"), config.getDouble("players.y"), config.getDouble("players.z")),
-                new Location(world, config.getDouble("zombies.x"), config.getDouble("zombies.y"), config.getDouble("zombies.z")));
         ParallelZombies.log(Level.WARNING, "Loaded map config");
+
         gameManager = new GameManager(this, map);
 
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
@@ -78,8 +72,11 @@ public class ParallelZombies extends JavaPlugin {
     public static void log(Level level, String message) { Bukkit.getLogger().log(level, "[ParallelZombies] " + message); }
 
     public static void sendMessageTo(Player player, String message) {
-        Component msg = Component.text("§3[§f§lZombies§3] §a" + message);
-        player.sendMessage(msg);
+        player.sendMessage(createMessage(message));
+    }
+
+    public static void sendActionBarTo(Player player, String message){
+        player.sendActionBar(createMessage(message));
     }
 
     public static void sendMessage(String message) {

@@ -25,7 +25,9 @@ public class OnPlayerJoin implements Listener {
         p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 0));
         AttributeInstance instance = p.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         if (instance != null) {
-            instance.setBaseValue(15.9);
+            // having this number this high hides the attack indicator from flickering up
+            // it doesn't increase the attack speed at all from the previous 15.9 value.
+            instance.setBaseValue(30);
         }
         ParallelZombies.gameManager.addPlayer(event.getPlayer());
     }
