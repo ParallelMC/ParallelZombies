@@ -1,7 +1,7 @@
 name: "ParallelZombies"
 version: "1.0"
 main: parallelmc.pz.ParallelZombies
-api-version: 1.19
+api-version: 1.20
 author: EBro912
 description: A Zombie Apocalypse plugin for Parallel events
 commands:

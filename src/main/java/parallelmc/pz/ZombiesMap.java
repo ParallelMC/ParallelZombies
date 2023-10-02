@@ -1,6 +1,6 @@
 package parallelmc.pz;
 
-import com.mojang.datafixers.util.Pair;
+import com.comphenix.protocol.wrappers.Pair;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;

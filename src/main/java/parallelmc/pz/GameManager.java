@@ -1,6 +1,6 @@
 package parallelmc.pz;
 
-import com.mojang.datafixers.util.Pair;
+import com.comphenix.protocol.wrappers.Pair;
 import me.libraryaddict.disguise.DisguiseAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -197,7 +197,7 @@ public class GameManager {
         }
 
         ParallelZombies.log(Level.FINER,
-                String.format("Zombie %s Targets: %s", String.valueOf(zombie.getUniqueId()), arr)
+                String.format("Zombie %s Targets: %s", zombie.getUniqueId(), arr)
                 );
 
         return weightedChoice(arr);

@@ -1,6 +1,6 @@
 package parallelmc.pz.utils;
 
-import com.mojang.datafixers.util.Pair;
+import com.comphenix.protocol.wrappers.Pair;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
