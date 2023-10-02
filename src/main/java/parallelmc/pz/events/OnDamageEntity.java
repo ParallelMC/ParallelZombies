@@ -1,6 +1,7 @@
 package parallelmc.pz.events;
 
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -34,6 +35,12 @@ public class OnDamageEntity implements Listener {
                 plv.handleDeath();
                 ParallelZombies.sendMessageTo(attacker, "You killed " + victim.getName());
                 ParallelZombies.sendMessageTo(victim, "You were killed by " + attacker.getName());
+            }
+        }
+        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie) {
+            ZombiesPlayer pla = ParallelZombies.gameManager.getPlayer(attacker);
+            if (pla.getTeam() != Team.SURVIVOR) {
+                event.setCancelled(true);
             }
         }
     }
