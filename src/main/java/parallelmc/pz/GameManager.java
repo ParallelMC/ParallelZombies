@@ -56,7 +56,6 @@ public class GameManager {
     }
 
     public void startGame() {
-        // TODO: teleport players to map
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         players.forEach((p, z) -> {
             z.equipSurvivor();
@@ -77,7 +76,7 @@ public class GameManager {
                         ParallelZombies.log(Level.SEVERE, "Failed to select a player to be a zombie!");
                         return;
                     }
-                    target.makeZombie();
+                    target.makeZombie(true);
                     gameState = GameState.PLAY;
                     doGame();
                     this.cancel();

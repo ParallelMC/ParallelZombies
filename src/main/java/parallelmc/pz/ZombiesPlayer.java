@@ -24,6 +24,7 @@ public class ZombiesPlayer {
     private final Player player;
     private final FastBoard board;
     private Team team;
+    private boolean isAlpha = false;
 
     private final BossBar bossBar = BossBar.bossBar(Component.text("Leap Cooldown"), 1, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
 
@@ -85,12 +86,13 @@ public class ZombiesPlayer {
             player.teleport(ParallelZombies.gameManager.map.getZombieSpawnPoint());
         }
         else {
-            this.makeZombie();
+            this.makeZombie(false);
         }
     }
 
-    public void makeZombie() {
-        MobDisguise disguise = new MobDisguise(DisguiseType.WITHER_SKELETON);
+    public void makeZombie(boolean alphaZombie) {
+        this.isAlpha = alphaZombie;
+        MobDisguise disguise = isAlpha ? new MobDisguise(DisguiseType.WITHER_SKELETON) : new MobDisguise(DisguiseType.SKELETON);
         disguise.setViewSelfDisguise(false);
         disguise.setEntity(player);
         LivingWatcher watcher = disguise.getWatcher();
@@ -128,13 +130,24 @@ public class ZombiesPlayer {
         }
         inv.clear();
         inv.setItem(0, unbreakableItem(Material.STONE_AXE, "Right-click to use your Leap!"));
-        inv.setArmorContents(new ItemStack[] {
-                new ItemStack(Material.AIR),
-                new ItemStack(Material.AIR),
-                new ItemStack(Material.AIR),
-                new ItemStack(Material.WITHER_SKELETON_SKULL)
-        });
-        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 1));
+        if (isAlpha) {
+            inv.setArmorContents(new ItemStack[]{
+                    new ItemStack(Material.AIR),
+                    new ItemStack(Material.AIR),
+                    new ItemStack(Material.AIR),
+                    new ItemStack(Material.WITHER_SKELETON_SKULL)
+            });
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 1));
+        }
+        else {
+            inv.setArmorContents(new ItemStack[]{
+                    new ItemStack(Material.AIR),
+                    new ItemStack(Material.AIR),
+                    new ItemStack(Material.AIR),
+                    new ItemStack(Material.SKELETON_SKULL)
+            });
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
+        }
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 0));
     }
 
