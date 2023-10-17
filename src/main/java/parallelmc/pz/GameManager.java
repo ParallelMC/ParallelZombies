@@ -5,6 +5,7 @@ import me.libraryaddict.disguise.DisguiseAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -62,6 +63,8 @@ public class GameManager {
             z.getMcPlayer().teleport(map.getPlayerSpawnPoint());
         });
         this.gameState = GameState.STARTING;
+
+        this.plugin.getServer().getWorld("world").getEntities().stream().filter(x -> x.getType() == EntityType.ZOMBIE).forEach(Entity::remove);
         new BukkitRunnable() {
             int countdown = 15;
             @Override

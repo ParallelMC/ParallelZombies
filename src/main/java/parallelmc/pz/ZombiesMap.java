@@ -34,8 +34,14 @@ public class ZombiesMap {
      * Get a random player spawn point
      */
     public Location getPlayerSpawnPoint() {
+
         // First, select a random spawn 'zone' from the list
-        Pair<Location, Double> spawn = playerSpawns.get(ZombieUtils.rng.nextInt(playerSpawns.size()-1));
+        Pair<Location, Double> spawn;
+        // if there is only one spawn zone, use that one
+        if (playerSpawns.size() == 1)
+            spawn = playerSpawns.get(0);
+        else
+            spawn = playerSpawns.get(ZombieUtils.rng.nextInt(playerSpawns.size()-1));
 
         // if the radius is 0, just use the exact spot
         if(spawn.getSecond() == 0d) return spawn.getFirst();
@@ -49,7 +55,12 @@ public class ZombiesMap {
      */
     public Location getZombieSpawnPoint() {
         // First, select a random spawn 'zone' from the list
-        Pair<Location, Double> spawn = zombieSpawns.get(ZombieUtils.rng.nextInt(zombieSpawns.size()-1));
+        Pair<Location, Double> spawn;
+        // if there is only one spawn zone, use that one
+        if (zombieSpawns.size() == 1)
+            spawn = zombieSpawns.get(0);
+        else
+            spawn = zombieSpawns.get(ZombieUtils.rng.nextInt(zombieSpawns.size()-1));
 
         // if the radius is 0, just use the exact spot
         if(spawn.getSecond() == 0d) return spawn.getFirst();
@@ -86,7 +97,7 @@ public class ZombiesMap {
         ArrayList<Pair<Location, Double>> playerSpawns = new ArrayList<>();
         ArrayList<Pair<Location, Double>> zombieSpawns = new ArrayList<>();
 
-        if(_playerSpawns == null || _zombieSpawns == null){
+        if(_playerSpawns == null || _zombieSpawns == null || _playerSpawns.size() == 0 || _zombieSpawns.size() == 0){
             log(Level.SEVERE, "Error loading map. Make sure you have player and zombie spawns specified.");
             return null;
         }
