@@ -57,8 +57,8 @@ public class ZombieUtils {
      */
     public static Location getRandomLocationInRadius(Location center, double radius){
 
-        double x = rng.nextDouble(-radius, radius);
-        double z = rng.nextDouble(-radius, radius);
+        double x = rng.nextDouble(-radius, radius + 1);
+        double z = rng.nextDouble(-radius, radius + 1);
 
         return center.add(x, 0, z);
     }

@@ -9,6 +9,7 @@ import parallelmc.pz.GameState;
 import parallelmc.pz.ParallelZombies;
 import parallelmc.pz.Team;
 import parallelmc.pz.ZombiesPlayer;
+import parallelmc.pz.utils.ZombieUtils;
 
 public class OnDamageEntity implements Listener {
     @EventHandler
@@ -37,10 +38,11 @@ public class OnDamageEntity implements Listener {
                 ParallelZombies.sendMessageTo(victim, "You were killed by " + attacker.getName());
             }
         }
-        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie) {
+        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie zombie) {
             ZombiesPlayer pla = ParallelZombies.gameManager.getPlayer(attacker);
             if (pla.getTeam() != Team.SURVIVOR) {
                 event.setCancelled(true);
+                zombie.setTarget(ParallelZombies.gameManager.getRandomSurvivorByDistance(zombie));
             }
         }
     }

@@ -36,6 +36,7 @@ public class GameManager {
     }
 
     private void doPregame() {
+        this.plugin.getServer().getWorld("world").getEntities().stream().filter(x -> x.getType() == EntityType.ZOMBIE).forEach(Entity::remove);
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if (gameState != GameState.PREGAME) {
                 ParallelZombies.log(Level.SEVERE, "PreGame loop running during " + gameState + ". This shouldn't be happening!");
@@ -64,7 +65,6 @@ public class GameManager {
         });
         this.gameState = GameState.STARTING;
 
-        this.plugin.getServer().getWorld("world").getEntities().stream().filter(x -> x.getType() == EntityType.ZOMBIE).forEach(Entity::remove);
         new BukkitRunnable() {
             int countdown = 15;
             @Override
@@ -98,6 +98,7 @@ public class GameManager {
             }
             players.forEach((p, z) -> {
                 z.updateBoard(getSurvivorsLeft(), getZombiesLeft());
+                z.getMcPlayer().setFoodLevel(23);
             });
 
         }, 0L, 20L);
@@ -135,11 +136,12 @@ public class GameManager {
             int countdown = 10;
             @Override
             public void run() {
-                players.forEach((p, z) -> {
-                    z.updateEndingBoard(countdown);
-                });
+                players.forEach((p, z) -> z.updateEndingBoard(countdown));
                 if (countdown <= 0) {
                     // TODO: teleport people back to the lobby
+                    players.forEach((p, z) -> {
+                        z.resetPlayer();
+                    });
                     gameState = GameState.PREGAME;
                     doPregame();
                     this.cancel();

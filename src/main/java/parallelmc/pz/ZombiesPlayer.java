@@ -33,7 +33,7 @@ public class ZombiesPlayer {
     public ZombiesPlayer(Player player) {
         this.player = player;
         this.board = new FastBoard(this.player);
-        this.board.updateTitle("§lParallel§cZombies");
+        this.board.updateTitle("§lParallel§l§cZombies");
         // everyone stars as a survivor until the game begins
         this.team = Team.SURVIVOR;
         this.leapCooldown = false;
@@ -90,6 +90,13 @@ public class ZombiesPlayer {
         }
     }
 
+    public void resetPlayer() {
+        player.clearActivePotionEffects();
+        player.getInventory().clear();
+        isAlpha = false;
+        team = Team.SURVIVOR;
+    }
+
     public void makeZombie(boolean alphaZombie) {
         this.isAlpha = alphaZombie;
         MobDisguise disguise = isAlpha ? new MobDisguise(DisguiseType.WITHER_SKELETON) : new MobDisguise(DisguiseType.SKELETON);
@@ -120,7 +127,6 @@ public class ZombiesPlayer {
                 unbreakableItem(Material.IRON_CHESTPLATE),
                 unbreakableItem(Material.IRON_HELMET)
         });
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 0));
     }
 
     public void equipZombie() {
@@ -148,7 +154,6 @@ public class ZombiesPlayer {
             });
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
         }
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 0));
     }
 
     public void startLeapCooldown() {

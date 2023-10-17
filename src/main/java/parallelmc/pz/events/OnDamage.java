@@ -24,6 +24,11 @@ public class OnDamage implements Listener {
                 return;
             }
 
+            if (event.getCause() == EntityDamageEvent.DamageCause.FALL && pl.getTeam() == Team.ZOMBIE) {
+                event.setCancelled(true);
+                return;
+            }
+
             if (player.getHealth() - event.getFinalDamage() <= 0D) {
                 event.setCancelled(true);
                 pl.handleDeath();
