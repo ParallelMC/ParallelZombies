@@ -7,6 +7,7 @@ import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -93,6 +94,7 @@ public class ZombiesPlayer {
     public void resetPlayer() {
         player.clearActivePotionEffects();
         player.getInventory().clear();
+        player.setGameMode(GameMode.ADVENTURE);
         isAlpha = false;
         team = Team.SURVIVOR;
     }
@@ -119,7 +121,6 @@ public class ZombiesPlayer {
             player.removePotionEffect(e.getType());
         }
         inv.clear();
-        // TODO: add compass
         inv.setItem(0, unbreakableItem(Material.IRON_SWORD));
         inv.setArmorContents(new ItemStack[] {
                 unbreakableItem(Material.IRON_BOOTS),
@@ -154,6 +155,17 @@ public class ZombiesPlayer {
             });
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
         }
+    }
+
+    public void equipSpectator() {
+        team = Team.SPECTATOR;
+        PlayerInventory inv = player.getInventory();
+        for (PotionEffect e : player.getActivePotionEffects()) {
+            player.removePotionEffect(e.getType());
+        }
+        inv.clear();
+        player.setGameMode(GameMode.SPECTATOR);
+        ParallelZombies.sendMessageTo(player, "You have joined a game in progress, you can spectate until the game ends.");
     }
 
     public void startLeapCooldown() {

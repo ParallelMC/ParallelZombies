@@ -19,15 +19,17 @@ public class ZombiesMap {
     public String name;
     public final ArrayList<Pair<Location, Double>> playerSpawns;
     public final ArrayList<Pair<Location, Double>> zombieSpawns;
+    public final Location lobby;
     public final World world;
 
 
 
-    public ZombiesMap(String name, World world, ArrayList<Pair<Location, Double>> playerSpawns, ArrayList<Pair<Location, Double>> zombieSpawns) {
+    public ZombiesMap(String name, World world, ArrayList<Pair<Location, Double>> playerSpawns, ArrayList<Pair<Location, Double>> zombieSpawns, Location lobby) {
         this.name = name;
         this.world = world;
         this.playerSpawns = playerSpawns;
         this.zombieSpawns = zombieSpawns;
+        this.lobby = lobby;
     }
 
     /**
@@ -102,7 +104,10 @@ public class ZombiesMap {
             return null;
         }
 
+        Location lobby;
         try {
+            lobby = new Location(world, config.getDouble("lobby.x"), config.getDouble("lobby.y"), config.getDouble("lobby.z"));
+
             for (HashMap<String, Double> spawn : _playerSpawns) {
                 playerSpawns.add(new Pair<>(
                         new Location(world, spawn.get("x"), spawn.get("y"), spawn.get("z")),
@@ -120,6 +125,6 @@ public class ZombiesMap {
             return null;
         }
 
-        return new ZombiesMap("map", world, playerSpawns, zombieSpawns);
+        return new ZombiesMap("map", world, playerSpawns, zombieSpawns, lobby);
     }
 }

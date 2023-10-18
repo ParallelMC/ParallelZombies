@@ -14,7 +14,6 @@ import parallelmc.pz.ParallelZombies;
 public class OnPlayerJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // TODO: handle joining during a game
         Player p = event.getPlayer();
         p.setGameMode(GameMode.ADVENTURE);
         p.getInventory().clear();

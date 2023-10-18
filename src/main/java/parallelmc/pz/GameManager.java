@@ -37,6 +37,7 @@ public class GameManager {
 
     private void doPregame() {
         this.plugin.getServer().getWorld("world").getEntities().stream().filter(x -> x.getType() == EntityType.ZOMBIE).forEach(Entity::remove);
+
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if (gameState != GameState.PREGAME) {
                 ParallelZombies.log(Level.SEVERE, "PreGame loop running during " + gameState + ". This shouldn't be happening!");
@@ -53,6 +54,7 @@ public class GameManager {
                 }
                 // TODO: This currently does nothing, but handle needed players, etc. in the future
                 z.updateLobbyBoard();
+                player.setFoodLevel(23);
             });
         }, 0L, 20L);
     }
@@ -138,9 +140,9 @@ public class GameManager {
             public void run() {
                 players.forEach((p, z) -> z.updateEndingBoard(countdown));
                 if (countdown <= 0) {
-                    // TODO: teleport people back to the lobby
                     players.forEach((p, z) -> {
                         z.resetPlayer();
+                        z.getMcPlayer().teleport(map.lobby);
                     });
                     gameState = GameState.PREGAME;
                     doPregame();
@@ -152,25 +154,44 @@ public class GameManager {
     }
 
     public void addPlayer(Player player) {
-        players.put(player.getUniqueId(), new ZombiesPlayer(player));
+        ZombiesPlayer pl = new ZombiesPlayer(player);
+        players.put(player.getUniqueId(), pl);
         player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
         player.playerListName(Component.text(player.getName(), NamedTextColor.GREEN));
+        if (gameState != GameState.PREGAME) {
+            pl.equipSpectator();
+            player.teleport(map.getPlayerSpawnPoint());
+        }
+        else {
+            player.teleport(map.lobby);
+        }
     }
 
     public void removePlayer(Player player) {
-        // TODO: handle edge cases (player leaving as 1st zombie, player leaving as last survivor, etc.)
         ZombiesPlayer pl = getPlayer(player);
         pl.deleteBoard();
         players.remove(player.getUniqueId());
+
+        // edge cases
+        if (getSurvivorsLeft() > 0 && getZombiesLeft() == 0) {
+            ZombiesPlayer target = getRandomSurvivor();
+            if (target == null) {
+                ParallelZombies.sendMessage("Ending the game due to an error.");
+                endGame();
+                ParallelZombies.log(Level.SEVERE, "Failed to find replacement zombie!");
+                return;
+            }
+            target.makeZombie(true);
+        }
     }
 
-    public Player getRandomSurvivor() {
+    public ZombiesPlayer getRandomSurvivor() {
         ZombiesPlayer target = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).skip((int) (players.size() * Math.random())).findFirst().orElse(null);
         if (target == null) {
-            ParallelZombies.log(Level.WARNING, "Failed to find target for zombie spawn.");
+            ParallelZombies.log(Level.WARNING, "Failed to find a survivor");
             return null;
         }
-        return target.getMcPlayer();
+        return target;
     }
 
     /**
