@@ -15,10 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.pz.utils.ZombieUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 import static parallelmc.pz.utils.ZombieUtils.weightedChoice;
@@ -28,6 +25,8 @@ public class GameManager {
     private final HashMap<UUID, ZombiesPlayer> players = new HashMap<>();
     public GameState gameState;
     public ZombiesMap map;
+
+    private final HashSet<UUID> volunteerPool = new HashSet<>();
 
     public GameManager(Plugin plugin, ZombiesMap map) {
         this.plugin = plugin;
@@ -77,7 +76,14 @@ public class GameManager {
                 });
                 if (countdown <= 0) {
                     // choose random player to become a zombie
-                    ZombiesPlayer target = players.values().stream().skip((int) (players.size() * Math.random())).findFirst().orElse(null);
+                    ZombiesPlayer target;
+                    if (volunteerPool.size() > 0) {
+                        target = players.get((UUID)volunteerPool.toArray()[ZombieUtils.rng.nextInt(volunteerPool.size())]);
+                    }
+                    else {
+                        // if no one volunteers then pick someone at random
+                       target = players.values().stream().skip((int) (players.size() * Math.random())).findFirst().orElse(null);
+                    }
                     if (target == null) {
                         ParallelZombies.log(Level.SEVERE, "Failed to select a player to be a zombie!");
                         return;
@@ -232,6 +238,18 @@ public class GameManager {
 
         return weightedChoice(arr);
 
+    }
+
+    public void addVolunteer(Player player) {
+        volunteerPool.add(player.getUniqueId());
+    }
+
+    public void removeVolunteer(Player player) {
+        volunteerPool.remove(player.getUniqueId());
+    }
+
+    public boolean hasVolunteered(Player player) {
+        return volunteerPool.contains(player.getUniqueId());
     }
 
     public ZombiesPlayer getPlayer(Player player) { return players.get(player.getUniqueId()); }
