@@ -26,9 +26,7 @@ public class ZombiesPlayer {
     private final FastBoard board;
     private Team team;
     private boolean isAlpha = false;
-
     private final BossBar bossBar = BossBar.bossBar(Component.text("Leap Cooldown"), 1, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
-
     private boolean leapCooldown;
 
     public ZombiesPlayer(Player player) {

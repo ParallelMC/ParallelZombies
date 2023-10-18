@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import parallelmc.pz.utils.ZombieUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,7 +112,11 @@ public class GameManager {
             }
         }, 0L, 1L);
 
-        this.plugin.getServer().getScheduler().runTaskTimer(plugin, this::spawnZombie, 0L, 200L);
+        // TODO: try and scale for number of players
+        this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            for (int i = 0; i < ZombieUtils.rng.nextInt(1, 5); i++)
+                spawnZombie();
+        }, 0L, 200L);
     }
 
     private void spawnZombie() {
