@@ -71,9 +71,7 @@ public class GameManager {
             int countdown = 15;
             @Override
             public void run() {
-                players.forEach((p, z) -> {
-                    z.updateStartingBoard(countdown);
-                });
+                players.forEach((p, z) -> z.updateStartingBoard(countdown));
                 if (countdown <= 0) {
                     // choose random player to become a zombie
                     ZombiesPlayer target;
@@ -84,6 +82,7 @@ public class GameManager {
                         // if no one volunteers then pick someone at random
                        target = players.values().stream().skip((int) (players.size() * Math.random())).findFirst().orElse(null);
                     }
+                    volunteerPool.clear();
                     if (target == null) {
                         ParallelZombies.log(Level.SEVERE, "Failed to select a player to be a zombie!");
                         return;
@@ -114,7 +113,7 @@ public class GameManager {
 
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if (getSurvivorsLeft() == 1) {
-                endGame();
+                endGame(GameEndReason.NORMAL);
             }
         }, 0L, 1L);
 
@@ -135,16 +134,27 @@ public class GameManager {
         zombie.setTarget(getRandomSurvivorByDistance(zombie));
     }
 
-    private void endGame() {
+    // TODO: add reasons for the game ending
+    private void endGame(GameEndReason reason) {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         this.gameState = GameState.ENDING;
-        ZombiesPlayer winner = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).findFirst().orElse(null);
-        if (winner == null) {
-            ParallelZombies.log(Level.SEVERE, "Failed to retrieve the winning player!");
-            return;
+        if (reason == GameEndReason.NORMAL) {
+            ZombiesPlayer winner = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).findFirst().orElse(null);
+            if (winner == null) {
+                ParallelZombies.log(Level.SEVERE, "Failed to retrieve the winning player!");
+                return;
+            }
+            ParallelZombies.sendMessage(winner.getMcPlayer().getName() + " is the winner!");
         }
-        ParallelZombies.sendMessage(winner.getMcPlayer().getName() + " is the winner!");
-        // give the winner some time to celebrate
+        else if (reason == GameEndReason.NOT_ENOUGH_PLAYERS) {
+            ParallelZombies.sendMessage("Ending the game early as there are not enough players to continue.");
+        }
+        else if (reason == GameEndReason.ERROR) {
+            ParallelZombies.sendMessage("Ending the game early due to an error.");
+        }
+        else {
+            ParallelZombies.log(Level.SEVERE, "Unhandled game end reason: " + reason);
+        }
         new BukkitRunnable() {
             int countdown = 10;
             @Override
@@ -185,13 +195,18 @@ public class GameManager {
 
         // edge cases
         if (getSurvivorsLeft() > 0 && getZombiesLeft() == 0) {
+            if (players.size() == 2) {
+                endGame(GameEndReason.NOT_ENOUGH_PLAYERS);
+                return;
+            }
             ZombiesPlayer target = getRandomSurvivor();
             if (target == null) {
-                ParallelZombies.sendMessage("Ending the game due to an error.");
-                endGame();
+                endGame(GameEndReason.ERROR);
                 ParallelZombies.log(Level.SEVERE, "Failed to find replacement zombie!");
                 return;
             }
+            // TODO: send message when doing this
+            ParallelZombies.sendMessage("No more zombies remaining! Choosing another at random...");
             target.makeZombie(true);
         }
     }

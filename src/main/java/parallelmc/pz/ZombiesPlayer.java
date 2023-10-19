@@ -32,7 +32,7 @@ public class ZombiesPlayer {
     public ZombiesPlayer(Player player) {
         this.player = player;
         this.board = new FastBoard(this.player);
-        this.board.updateTitle("§lParallel§l§cZombies");
+        this.board.updateTitle("§lParallel§c§lZombies");
         // everyone stars as a survivor until the game begins
         this.team = Team.SURVIVOR;
         this.leapCooldown = false;
