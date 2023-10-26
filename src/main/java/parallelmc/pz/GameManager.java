@@ -134,11 +134,15 @@ public class GameManager {
     private void spawnZombie() {
         Location spawnPos = map.getZombieSpawnPoint();
         Zombie zombie = (Zombie)map.world.spawnEntity(spawnPos, EntityType.ZOMBIE);
+        zombie.setAdult();
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0));
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 0));
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
         zombie.setShouldBurnInDay(false);
         zombie.setTarget(getRandomSurvivorByDistance(zombie));
+        if (zombie.getVehicle() != null) {
+            zombie.getVehicle().remove();
+        }
     }
 
     public void endGame(GameEndReason reason) {
@@ -186,8 +190,7 @@ public class GameManager {
     public void addPlayer(Player player) {
         ZombiesPlayer pl = new ZombiesPlayer(player);
         players.put(player.getUniqueId(), pl);
-        player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
-        player.playerListName(Component.text(player.getName(), NamedTextColor.GREEN));
+        // TODO: make zombie player nametags red when they are a zombie
         if (gameState != GameState.PREGAME) {
             pl.equipSpectator();
             player.teleport(map.getPlayerSpawnPoint());
@@ -202,20 +205,22 @@ public class GameManager {
         pl.deleteBoard();
         players.remove(player.getUniqueId());
 
-        // edge cases
-        if (getSurvivorsLeft() > 0 && getZombiesLeft() == 0) {
-            if (players.size() == 2) {
-                endGame(GameEndReason.NOT_ENOUGH_PLAYERS);
-                return;
+        if (gameState == GameState.PLAY) {
+            // edge cases
+            if (getSurvivorsLeft() > 0 && getZombiesLeft() == 0) {
+                if (players.size() == 2) {
+                    endGame(GameEndReason.NOT_ENOUGH_PLAYERS);
+                    return;
+                }
+                ZombiesPlayer target = getRandomSurvivor();
+                if (target == null) {
+                    endGame(GameEndReason.ERROR);
+                    ParallelZombies.log(Level.SEVERE, "Failed to find replacement zombie!");
+                    return;
+                }
+                ParallelZombies.sendMessage("No more zombies remaining! Choosing another at random...");
+                target.makeZombie(true);
             }
-            ZombiesPlayer target = getRandomSurvivor();
-            if (target == null) {
-                endGame(GameEndReason.ERROR);
-                ParallelZombies.log(Level.SEVERE, "Failed to find replacement zombie!");
-                return;
-            }
-            ParallelZombies.sendMessage("No more zombies remaining! Choosing another at random...");
-            target.makeZombie(true);
         }
     }
 

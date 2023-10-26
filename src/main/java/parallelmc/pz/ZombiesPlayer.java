@@ -96,6 +96,8 @@ public class ZombiesPlayer {
         player.setGameMode(GameMode.ADVENTURE);
         isAlpha = false;
         team = Team.SURVIVOR;
+        player.displayName(Component.text(player.getName(), NamedTextColor.WHITE));
+        player.playerListName(Component.text(player.getName(), NamedTextColor.WHITE));
     }
 
     public void makeZombie(boolean alphaZombie) {
@@ -127,6 +129,8 @@ public class ZombiesPlayer {
                 unbreakableItem(Material.IRON_CHESTPLATE),
                 unbreakableItem(Material.IRON_HELMET)
         });
+        player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
+        player.playerListName(Component.text(player.getName(), NamedTextColor.GREEN));
     }
 
     public void equipZombie() {
@@ -154,6 +158,8 @@ public class ZombiesPlayer {
             });
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
         }
+        player.displayName(Component.text(player.getName(), NamedTextColor.RED));
+        player.playerListName(Component.text(player.getName(), NamedTextColor.RED));
     }
 
     public void equipSpectator() {
@@ -165,6 +171,8 @@ public class ZombiesPlayer {
         inv.clear();
         player.setGameMode(GameMode.SPECTATOR);
         ParallelZombies.sendMessageTo(player, "You have joined a game in progress, you can spectate until the game ends.");
+        player.displayName(Component.text(player.getName(), NamedTextColor.GRAY));
+        player.playerListName(Component.text(player.getName(), NamedTextColor.GRAY));
     }
 
     public void startLeapCooldown() {

@@ -5,6 +5,7 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Powerable;
 import org.bukkit.block.data.type.*;
 import org.bukkit.entity.Player;
@@ -46,10 +47,10 @@ public class OnRightClick implements Listener {
             if (!event.getPlayer().isOp()) {
                 Block clicked = event.getClickedBlock();
                 if (clicked != null) {
-                    BlockState state = clicked.getState();
-                    if (!(state instanceof Door) &&
-                            !(state instanceof Switch) &&
-                            !(state instanceof Gate)) {
+                    BlockData data = clicked.getBlockData();
+                    if (!(data instanceof Door) &&
+                            !(data instanceof Switch) &&
+                            !(data instanceof Gate)) {
                         event.setCancelled(true);
                     }
 
