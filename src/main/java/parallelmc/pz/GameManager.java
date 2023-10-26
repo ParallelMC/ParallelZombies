@@ -38,7 +38,7 @@ public class GameManager {
     }
 
     private void doPregame() {
-        this.plugin.getServer().getWorld("parallel_zombies").getEntities().stream().filter(x -> x.getType() == EntityType.ZOMBIE).forEach(Entity::remove);
+        this.plugin.getServer().getWorld("parallel-zombies").getEntities().stream().filter(x -> x.getType() == EntityType.ZOMBIE).forEach(Entity::remove);
 
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
             if (gameState != GameState.PREGAME) {
