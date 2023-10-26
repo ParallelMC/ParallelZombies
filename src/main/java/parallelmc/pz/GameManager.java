@@ -58,7 +58,7 @@ public class GameManager {
                 player.setFoodLevel(23);
             });
 
-            if (voteStart.size() >= players.size() - 1) {
+            if (players.size() > 2 && voteStart.size() >= players.size() - 1) {
                 ParallelZombies.sendMessage("Vote passed! Starting in 15 seconds...");
                 voteStart.clear();
                 startGame();

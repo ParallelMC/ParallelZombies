@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.pz.commands.EndGame;
 import parallelmc.pz.commands.StartGame;
 import parallelmc.pz.commands.Volunteer;
+import parallelmc.pz.commands.VoteStart;
 import parallelmc.pz.events.*;
 
 import java.util.logging.Level;
@@ -43,6 +44,7 @@ public class ParallelZombies extends JavaPlugin {
         this.getCommand("startgame").setExecutor(new StartGame());
         this.getCommand("endgame").setExecutor(new EndGame());
         this.getCommand("volunteer").setExecutor(new Volunteer());
+        this.getCommand("votestart").setExecutor(new VoteStart());
 
         // todo: this should be dynamic
         World world = this.getServer().getWorld("parallel-zombies");

@@ -43,15 +43,17 @@ public class OnRightClick implements Listener {
                 }
             }
 
-            Block clicked = event.getClickedBlock();
-            if (clicked != null) {
-                BlockState state = clicked.getState();
-                if (!(state instanceof Door) &&
-                    !(state instanceof Switch) &&
-                    !(state instanceof Gate)) {
-                    event.setCancelled(true);
-                }
+            if (!event.getPlayer().isOp()) {
+                Block clicked = event.getClickedBlock();
+                if (clicked != null) {
+                    BlockState state = clicked.getState();
+                    if (!(state instanceof Door) &&
+                            !(state instanceof Switch) &&
+                            !(state instanceof Gate)) {
+                        event.setCancelled(true);
+                    }
 
+                }
             }
         }
     }
