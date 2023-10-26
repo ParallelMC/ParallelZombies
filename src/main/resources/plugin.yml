@@ -16,3 +16,6 @@ commands:
   volunteer:
     description: Enter a pool of volunteers to start as a zombie
     usage: /volunteer
+  votestart:
+    description: Vote to start the game
+    usage: /votestart

@@ -38,10 +38,11 @@ public class ZombiesPlayer {
         this.leapCooldown = false;
     }
 
-    public void updateLobbyBoard() {
+    public void updateLobbyBoard(int curVotes, int neededVotes) {
         this.board.updateLines(
                 "",
-                "§eWaiting to start..."
+                "§eVotes needed to start",
+                "§6" + curVotes + "/" + neededVotes
         );
     }
 

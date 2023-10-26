@@ -28,6 +28,8 @@ public class GameManager {
 
     private final HashSet<UUID> volunteerPool = new HashSet<>();
 
+    private final HashSet<UUID> voteStart = new HashSet<>();
+
     public GameManager(Plugin plugin, ZombiesMap map) {
         this.plugin = plugin;
         this.gameState = GameState.PREGAME;
@@ -52,10 +54,15 @@ public class GameManager {
                 if (DisguiseAPI.isDisguised(player)) {
                     DisguiseAPI.undisguiseToAll(player);
                 }
-                // TODO: This currently does nothing, but handle needed players, etc. in the future
-                z.updateLobbyBoard();
+                z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3));
                 player.setFoodLevel(23);
             });
+
+            if (voteStart.size() >= players.size() - 1) {
+                ParallelZombies.sendMessage("Vote passed! Starting in 15 seconds...");
+                voteStart.clear();
+                startGame();
+            }
         }, 0L, 20L);
     }
 
@@ -268,6 +275,16 @@ public class GameManager {
         return volunteerPool.contains(player.getUniqueId());
     }
 
+    public void addVoteStart(Player player) {
+        voteStart.add(player.getUniqueId());
+    }
+
+    public boolean hasVotedToStart(Player player) {
+        return voteStart.contains(player.getUniqueId());
+    }
+
+    public int currentVotesToStart() { return voteStart.size(); }
+
     public ZombiesPlayer getPlayer(Player player) { return players.get(player.getUniqueId()); }
 
     public int getSurvivorsLeft() {
@@ -277,6 +294,8 @@ public class GameManager {
     public int getZombiesLeft() {
         return (int)players.values().stream().filter(x -> x.getTeam() == Team.ZOMBIE).count();
     }
+
+    public int playerCount() { return players.size(); }
 
     public Plugin getPlugin() { return this.plugin; }
 
