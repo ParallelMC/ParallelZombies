@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import parallelmc.pz.commands.EndGame;
 import parallelmc.pz.commands.StartGame;
 import parallelmc.pz.commands.Volunteer;
 import parallelmc.pz.events.*;
@@ -39,6 +40,7 @@ public class ParallelZombies extends JavaPlugin {
         manager.registerEvents(new OnRightClick(), this);
 
         this.getCommand("startgame").setExecutor(new StartGame());
+        this.getCommand("endgame").setExecutor(new EndGame());
         this.getCommand("volunteer").setExecutor(new Volunteer());
 
         // todo: this should be dynamic

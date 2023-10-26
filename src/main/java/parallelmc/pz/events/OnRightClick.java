@@ -28,7 +28,7 @@ public class OnRightClick implements Listener {
                     return;
                 }
                 if (player.getInventory().getItemInMainHand().getType() == Material.STONE_AXE) {
-                    player.setVelocity(player.getLocation().getDirection().normalize().multiply(1.5f));
+                    player.setVelocity(player.getLocation().getDirection().normalize().multiply(1f));
                     ParallelZombies.sendActionBarTo(player, "You used Leap!");
                     player.playSound(
                             Sound.sound(Key.key("item.trident.riptide_1"),

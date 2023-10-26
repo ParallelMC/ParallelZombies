@@ -134,8 +134,7 @@ public class GameManager {
         zombie.setTarget(getRandomSurvivorByDistance(zombie));
     }
 
-    // TODO: add reasons for the game ending
-    private void endGame(GameEndReason reason) {
+    public void endGame(GameEndReason reason) {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         this.gameState = GameState.ENDING;
         if (reason == GameEndReason.NORMAL) {
@@ -148,6 +147,9 @@ public class GameManager {
         }
         else if (reason == GameEndReason.NOT_ENOUGH_PLAYERS) {
             ParallelZombies.sendMessage("Ending the game early as there are not enough players to continue.");
+        }
+        else if (reason == GameEndReason.COMMAND) {
+            ParallelZombies.sendMessage("Ending the game early as requested by an operator.");
         }
         else if (reason == GameEndReason.ERROR) {
             ParallelZombies.sendMessage("Ending the game early due to an error.");
@@ -205,7 +207,6 @@ public class GameManager {
                 ParallelZombies.log(Level.SEVERE, "Failed to find replacement zombie!");
                 return;
             }
-            // TODO: send message when doing this
             ParallelZombies.sendMessage("No more zombies remaining! Choosing another at random...");
             target.makeZombie(true);
         }

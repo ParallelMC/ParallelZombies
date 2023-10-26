@@ -9,6 +9,10 @@ commands:
     description: Force starts the game
     usage: /startgame
     default: op
+  endgame:
+    description: Force ends the game
+    usage: /endgame
+    default: op
   volunteer:
     description: Enter a pool of volunteers to start as a zombie
     usage: /volunteer
