@@ -3,11 +3,16 @@ package parallelmc.pz.events;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Powerable;
+import org.bukkit.block.data.type.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.material.Button;
 import parallelmc.pz.ParallelZombies;
 import parallelmc.pz.ZombiesPlayer;
 
@@ -36,6 +41,17 @@ public class OnRightClick implements Listener {
                     );
                     pl.startLeapCooldown();
                 }
+            }
+
+            Block clicked = event.getClickedBlock();
+            if (clicked != null) {
+                BlockState state = clicked.getState();
+                if (!(state instanceof Door) &&
+                    !(state instanceof Switch) &&
+                    !(state instanceof Gate)) {
+                    event.setCancelled(true);
+                }
+
             }
         }
     }

@@ -9,7 +9,6 @@ import parallelmc.pz.GameState;
 import parallelmc.pz.ParallelZombies;
 import parallelmc.pz.Team;
 import parallelmc.pz.ZombiesPlayer;
-import parallelmc.pz.utils.ZombieUtils;
 
 public class OnDamageEntity implements Listener {
     @EventHandler
