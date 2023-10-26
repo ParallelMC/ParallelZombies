@@ -78,7 +78,7 @@ public class ZombiesMap {
      */
     public static ZombiesMap loadFromConfig(String fileName){
         // todo: this should be dynamic
-        World world = ParallelZombies.instance.getServer().getWorld("world");
+        World world = ParallelZombies.instance.getServer().getWorld("parallel_zombies");
         if (world == null) {
             log(Level.SEVERE, "Could not find map world!");
             return null;

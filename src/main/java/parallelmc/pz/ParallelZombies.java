@@ -45,9 +45,9 @@ public class ParallelZombies extends JavaPlugin {
         this.getCommand("volunteer").setExecutor(new Volunteer());
 
         // todo: this should be dynamic
-        World world = this.getServer().getWorld("world");
+        World world = this.getServer().getWorld("parallel_zombies");
         if (world == null) {
-            log(Level.SEVERE, "Could not find map world!");
+            log(Level.SEVERE, "Could not find map parallel_zombies!");
             return;
         }
 
