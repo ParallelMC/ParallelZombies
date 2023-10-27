@@ -37,12 +37,17 @@ public class OnDamageEntity implements Listener {
                 ParallelZombies.sendMessageTo(victim, "You were killed by " + attacker.getName());
             }
         }
-        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie zombie) {
-            ZombiesPlayer pla = ParallelZombies.gameManager.getPlayer(attacker);
-            if (pla.getTeam() != Team.SURVIVOR) {
+        else if (event.getEntity() instanceof Player victim && event.getDamager() instanceof Zombie zombie) {
+            ZombiesPlayer plv = ParallelZombies.gameManager.getPlayer(victim);
+            if (plv.getTeam() != Team.SURVIVOR) {
                 event.setCancelled(true);
                 zombie.setTarget(ParallelZombies.gameManager.getRandomSurvivorByDistance(zombie));
             }
+        }
+        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie zombie) {
+            ZombiesPlayer pla = ParallelZombies.gameManager.getPlayer(attacker);
+            if (pla.getTeam() == Team.ZOMBIE)
+                event.setCancelled(true);
         }
     }
 }

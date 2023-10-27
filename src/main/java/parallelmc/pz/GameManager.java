@@ -190,7 +190,6 @@ public class GameManager {
     public void addPlayer(Player player) {
         ZombiesPlayer pl = new ZombiesPlayer(player);
         players.put(player.getUniqueId(), pl);
-        // TODO: make zombie player nametags red when they are a zombie
         if (gameState != GameState.PREGAME) {
             pl.equipSpectator();
             player.teleport(map.getPlayerSpawnPoint());
