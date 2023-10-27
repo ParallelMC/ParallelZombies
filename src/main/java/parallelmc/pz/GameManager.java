@@ -245,8 +245,8 @@ public class GameManager {
 
         for (ZombiesPlayer player: targets) {
             double distance = zombie.getLocation().distance(player.getMcPlayer().getLocation());
-            // don't include targets over a certain distance away (100 for testing)
-            if(distance < 100){
+            // don't include targets over a certain distance away
+            if(distance < 50){
                 // convert shorter distances to be higher weights
                 int weight = (int) ((1./distance) * 100);
 
@@ -258,10 +258,6 @@ public class GameManager {
             ParallelZombies.log(Level.WARNING, String.format("Failed to find a target for zombie %s spawn.", zombie.getUniqueId()));
             return null;
         }
-
-        ParallelZombies.log(Level.FINER,
-                String.format("Zombie %s Targets: %s", zombie.getUniqueId(), arr)
-                );
 
         return weightedChoice(arr);
 

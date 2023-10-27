@@ -44,7 +44,7 @@ public class OnDamageEntity implements Listener {
                 zombie.setTarget(ParallelZombies.gameManager.getRandomSurvivorByDistance(zombie));
             }
         }
-        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie zombie) {
+        else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie) {
             ZombiesPlayer pla = ParallelZombies.gameManager.getPlayer(attacker);
             if (pla.getTeam() == Team.ZOMBIE)
                 event.setCancelled(true);

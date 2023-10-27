@@ -14,14 +14,12 @@ public class OnEntityTarget implements Listener {
     @EventHandler
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.getEntityType() == EntityType.ZOMBIE) {
-            if (event.getReason() != EntityTargetEvent.TargetReason.CUSTOM && event.getReason() != EntityTargetEvent.TargetReason.UNKNOWN) {
+            EntityTargetEvent.TargetReason reason = event.getReason();
+            if (reason != EntityTargetEvent.TargetReason.CUSTOM
+                    && reason != EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY
+                    && reason != EntityTargetEvent.TargetReason.TARGET_ATTACKED_NEARBY_ENTITY
+                    && reason != EntityTargetEvent.TargetReason.UNKNOWN) {
                 event.setCancelled(true);
-                /*Player target = ParallelZombies.gameManager.getRandomSurvivorByDistance((Zombie)event.getEntity());
-                if (target == null) {
-                    ParallelZombies.log(Level.WARNING, "Failed to find target for zombie.");
-                    return;
-                }
-                event.setTarget(target);*/
             }
         }
     }
