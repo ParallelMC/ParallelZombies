@@ -24,8 +24,18 @@ public class OnRightClick implements Listener {
             Player player = event.getPlayer();
 
             if (player.getInventory().getItemInMainHand().getType() == Material.STONE_AXE) {
-                event.setCancelled(true);
                 ZombiesPlayer pl = ParallelZombies.gameManager.getPlayer(player);
+                Block clicked = event.getClickedBlock();
+                if (clicked != null) {
+                    BlockData data = clicked.getBlockData();
+                    if (data instanceof Door ||
+                            data instanceof Switch ||
+                            data instanceof Gate) {
+                        return;
+                    }
+
+                }
+                event.setCancelled(true);
                 if (pl.isLeapCooldown()) {
                     ParallelZombies.sendActionBarTo(player, "Your Leap is on cooldown!");
                     player.playSound(
@@ -34,27 +44,14 @@ public class OnRightClick implements Listener {
                     );
                     return;
                 }
-                if (player.getInventory().getItemInMainHand().getType() == Material.STONE_AXE) {
-                    Block clicked = event.getClickedBlock();
-                    if (clicked != null) {
-                        BlockData data = clicked.getBlockData();
-                        if (data instanceof Door ||
-                                data instanceof Switch ||
-                                data instanceof Gate) {
-                            return;
-                        }
-
-                    }
-                    player.setVelocity(player.getLocation().getDirection().normalize().multiply(1f));
-                    ParallelZombies.sendActionBarTo(player, "You used Leap!");
-                    player.playSound(
-                            Sound.sound(Key.key("item.trident.riptide_1"),
-                                    Sound.Source.MASTER, 0.5f, 0.9f)
-                    );
-                    pl.startLeapCooldown();
-                }
+                player.setVelocity(player.getLocation().getDirection().normalize().multiply(1f));
+                ParallelZombies.sendActionBarTo(player, "You used Leap!");
+                player.playSound(
+                        Sound.sound(Key.key("item.trident.riptide_1"),
+                                Sound.Source.MASTER, 0.5f, 0.9f)
+                );
+                pl.startLeapCooldown();
             }
-
             if (!event.getPlayer().isOp()) {
                 Block clicked = event.getClickedBlock();
                 if (clicked != null) {
