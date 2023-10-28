@@ -41,6 +41,8 @@ public class ParallelZombies extends JavaPlugin {
         manager.registerEvents(new OnRightClick(), this);
         manager.registerEvents(new OnPlayerManipulateArmorStand(), this);
         manager.registerEvents(new OnEntityTarget(), this);
+        manager.registerEvents(new OnDropItem(), this);
+        manager.registerEvents(new OnHangingBreak(), this);
 
         this.getCommand("startgame").setExecutor(new StartGame());
         this.getCommand("endgame").setExecutor(new EndGame());

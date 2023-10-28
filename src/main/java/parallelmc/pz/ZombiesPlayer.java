@@ -9,9 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.WitherSkeleton;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -42,7 +40,8 @@ public class ZombiesPlayer {
         this.board.updateLines(
                 "",
                 "§eVotes needed to start",
-                "§6" + curVotes + "/" + neededVotes
+                "§6" + curVotes + "/" + neededVotes,
+                "§6/votestart"
         );
     }
 
@@ -68,8 +67,8 @@ public class ZombiesPlayer {
     public void updateEndingBoard(int countdown) {
         this.board.updateLines(
                 "",
-                "Returning to lobby in:",
-                countdown + " seconds"
+                "§eReturning to lobby in:",
+                "§e" + countdown + " seconds"
         );
     }
 
@@ -77,10 +76,11 @@ public class ZombiesPlayer {
         Player p = this.player;
         p.setHealth(20d);
         if (this.team == Team.ZOMBIE) {
-            // spawn a fake wither skeleton to simulate death
-            WitherSkeleton sk = (WitherSkeleton)p.getWorld().spawnEntity(p.getLocation(), EntityType.WITHER_SKELETON);
+            LivingEntity sk = (LivingEntity)p.getWorld().spawnEntity(p.getLocation(),
+                    isAlpha ? EntityType.WITHER_SKELETON : EntityType.SKELETON);
             sk.setAI(false);
             sk.setGravity(false);
+            // this warning can be ignored, the two possible mobs spawned will always have a main hand
             sk.getEquipment().setItemInMainHand(new ItemStack(Material.STONE_AXE));
             sk.damage(20D);
             player.teleport(ParallelZombies.gameManager.map.getZombieSpawnPoint());
@@ -93,9 +93,12 @@ public class ZombiesPlayer {
     public void resetPlayer() {
         player.clearActivePotionEffects();
         player.getInventory().clear();
+        player.setHealth(20d);
         player.setGameMode(GameMode.ADVENTURE);
         isAlpha = false;
         team = Team.SURVIVOR;
+        leapCooldown = false;
+        player.hideBossBar(bossBar);
         player.displayName(Component.text(player.getName(), NamedTextColor.WHITE));
         player.playerListName(Component.text(player.getName(), NamedTextColor.WHITE));
     }

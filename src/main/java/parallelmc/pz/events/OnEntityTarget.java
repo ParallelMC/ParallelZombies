@@ -15,6 +15,12 @@ public class OnEntityTarget implements Listener {
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.getEntityType() == EntityType.ZOMBIE) {
             EntityTargetEvent.TargetReason reason = event.getReason();
+            // if a zombie forgets their target, choose a different survivor
+            if (reason == EntityTargetEvent.TargetReason.FORGOT_TARGET) {
+                Zombie zombie = (Zombie)event.getEntity();
+                zombie.setTarget(ParallelZombies.gameManager.getRandomSurvivorByDistance(zombie));
+                return;
+            }
             if (reason != EntityTargetEvent.TargetReason.CUSTOM
                     && reason != EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY
                     && reason != EntityTargetEvent.TargetReason.TARGET_ATTACKED_NEARBY_ENTITY

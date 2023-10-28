@@ -56,11 +56,16 @@ public class GameManager {
                 }
                 z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3));
                 player.setFoodLevel(23);
+                if (player.getLocation().getBlockY() < -64) {
+                    player.teleport(map.lobby);
+                }
+                if (volunteerPool.contains(player.getUniqueId())) {
+                    ParallelZombies.sendActionBarTo(player, String.format("You are volunteering to be the Alpha Zombie! (%.1f%% chance)", 100f / volunteerPool.size()));
+                }
             });
 
             if (players.size() > 2 && voteStart.size() >= players.size() - 1) {
                 ParallelZombies.sendMessage("Vote passed! Starting in 15 seconds...");
-                voteStart.clear();
                 startGame();
             }
         }, 0L, 20L);
@@ -68,6 +73,7 @@ public class GameManager {
 
     public void startGame() {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
+        voteStart.clear();
         players.forEach((p, z) -> {
             z.equipSurvivor();
             z.getMcPlayer().teleport(map.getPlayerSpawnPoint());
@@ -126,19 +132,20 @@ public class GameManager {
 
         // TODO: try and scale for number of players
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            for (int i = 0; i < ZombieUtils.rng.nextInt(1, 5); i++)
-                spawnZombie();
-        }, 0L, 200L);
+            for (Location loc : map.getAllZombieSpawnPoints())
+                for (int i = 0; i < ZombieUtils.rng.nextInt(1, 4); i++)
+                    spawnZombie(loc);
+        }, 0L, 240L);
     }
 
-    private void spawnZombie() {
-        Location spawnPos = map.getZombieSpawnPoint();
-        Zombie zombie = (Zombie)map.world.spawnEntity(spawnPos, EntityType.ZOMBIE);
+    private void spawnZombie(Location spawn) {
+        Zombie zombie = (Zombie)map.world.spawnEntity(spawn, EntityType.ZOMBIE);
         zombie.setAdult();
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0));
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, PotionEffect.INFINITE_DURATION, 0));
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0));
         zombie.setShouldBurnInDay(false);
+        zombie.setConversionTime(-1);
         zombie.setTarget(getRandomSurvivorByDistance(zombie));
         if (zombie.getVehicle() != null) {
             zombie.getVehicle().remove();
@@ -258,6 +265,7 @@ public class GameManager {
             ParallelZombies.log(Level.WARNING, String.format("Failed to find a target for zombie %s spawn.", zombie.getUniqueId()));
             return null;
         }
+
 
         return weightedChoice(arr);
 

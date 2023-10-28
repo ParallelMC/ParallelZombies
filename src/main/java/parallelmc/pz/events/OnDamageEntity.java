@@ -13,6 +13,7 @@ import parallelmc.pz.ZombiesPlayer;
 public class OnDamageEntity implements Listener {
     @EventHandler
     public void onDamageEntity(EntityDamageByEntityEvent event) {
+        // TODO: try and refactor this, it hurts to look at
         if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
             if (ParallelZombies.gameManager.gameState != GameState.PLAY) {
                 event.setCancelled(true);
@@ -47,6 +48,10 @@ public class OnDamageEntity implements Listener {
         else if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Zombie) {
             ZombiesPlayer pla = ParallelZombies.gameManager.getPlayer(attacker);
             if (pla.getTeam() == Team.ZOMBIE)
+                event.setCancelled(true);
+        }
+        else if (event.getDamager() instanceof Player attacker && !(event.getEntity() instanceof Zombie)) {
+            if (!attacker.isOp())
                 event.setCancelled(true);
         }
     }

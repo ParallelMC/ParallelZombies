@@ -10,6 +10,7 @@ import parallelmc.pz.utils.ZombieUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 import static parallelmc.pz.ParallelZombies.log;
@@ -69,6 +70,18 @@ public class ZombiesMap {
 
         // otherwise, get a random spot in that radius
         return getRandomLocationInRadius(spawn.getFirst(), spawn.getSecond());
+    }
+
+    /**
+    * Get a random zombie spawn point from all spawns
+    */
+    public List<Location> getAllZombieSpawnPoints() {
+        List<Location> result = new ArrayList<>();
+        for (Pair<Location, Double> spawn : zombieSpawns) {
+            if (spawn.getSecond() == 0d) result.add(spawn.getFirst());
+            else result.add(getRandomLocationInRadius(spawn.getFirst(), spawn.getSecond()));
+        }
+        return result;
     }
 
     /**

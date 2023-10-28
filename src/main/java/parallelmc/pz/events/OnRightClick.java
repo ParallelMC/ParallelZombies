@@ -22,6 +22,21 @@ public class OnRightClick implements Listener {
     public void onRightClick(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
+            if (!event.getPlayer().isOp()) {
+                Block clicked = event.getClickedBlock();
+                if (clicked != null) {
+                    BlockData data = clicked.getBlockData();
+                    if (!(data instanceof Door) &&
+                            !(data instanceof Switch) &&
+                            !(data instanceof Gate)) {
+                        event.setCancelled(true);
+                        // returning here fixes the axe bug
+                        return;
+                    }
+
+                }
+            }
+
             if (player.getInventory().getItemInMainHand().getType() == Material.STONE_AXE) {
                 event.setCancelled(true);
                 ZombiesPlayer pl = ParallelZombies.gameManager.getPlayer(player);
@@ -41,19 +56,6 @@ public class OnRightClick implements Listener {
                                     Sound.Source.MASTER, 0.5f, 0.9f)
                     );
                     pl.startLeapCooldown();
-                }
-            }
-
-            if (!event.getPlayer().isOp()) {
-                Block clicked = event.getClickedBlock();
-                if (clicked != null) {
-                    BlockData data = clicked.getBlockData();
-                    if (!(data instanceof Door) &&
-                            !(data instanceof Switch) &&
-                            !(data instanceof Gate)) {
-                        event.setCancelled(true);
-                    }
-
                 }
             }
         }

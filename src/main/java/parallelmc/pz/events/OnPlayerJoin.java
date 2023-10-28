@@ -21,7 +21,6 @@ public class OnPlayerJoin implements Listener {
             p.removePotionEffect(e.getType());
         }
         p.setHealth(20D);
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 0));
         AttributeInstance instance = p.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         if (instance != null) {
             // having this number this high hides the attack indicator from flickering up
