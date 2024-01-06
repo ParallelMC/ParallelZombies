@@ -10,7 +10,7 @@ public class SurvivalGamemode extends ZombiesGamemode {
     private int secondsLeft;
 
     public SurvivalGamemode(Plugin plugin) {
-        super(plugin, "Survival", "Survive until the timer ends!", "Eliminate the survivors before the timer ends! Survivor kills add 1 minute to the timer!");
+        super(plugin, "Survival", "Survive until the timer ends!", "Eliminate the survivors before the timer ends!\nSurvivor kills add 1 minute to the timer!");
         secondsLeft = 300;
     }
 
