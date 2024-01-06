@@ -98,7 +98,7 @@ public class GameManager {
                 players.forEach((p, z) -> {
                     z.updateStartingBoard(countdown);
                     if (countdown < 5) {
-                        z.getMcPlayer().playSound(Sound.sound(Key.key("block.note_block.chime"), Sound.Source.MASTER, 0.5f, 1f));
+                        z.getMcPlayer().playSound(Sound.sound(Key.key("block.note_block.hat"), Sound.Source.MASTER, 0.5f, 1f));
                     }
                 });
                 if (countdown <= 0) {

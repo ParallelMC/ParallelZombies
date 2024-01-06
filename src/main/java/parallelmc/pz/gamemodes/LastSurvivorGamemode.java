@@ -11,7 +11,7 @@ import java.util.logging.Level;
 public class LastSurvivorGamemode extends ZombiesGamemode {
 
     public LastSurvivorGamemode(Plugin plugin) {
-        super(plugin,"Last Survivor Standing", "Be the last survivor standing!", "Eliminate the survivors!");
+        super(plugin,"Last Survivor Standing", "Be the last Survivor standing!", "Eliminate the Survivors!");
     }
 
     @Override
