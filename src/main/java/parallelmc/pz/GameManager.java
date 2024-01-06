@@ -2,8 +2,9 @@ package parallelmc.pz;
 
 import com.comphenix.protocol.wrappers.Pair;
 import me.libraryaddict.disguise.DisguiseAPI;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -13,10 +14,16 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import parallelmc.pz.gamemodes.LastSurvivorGamemode;
+import parallelmc.pz.gamemodes.SurvivalGamemode;
+import parallelmc.pz.gamemodes.ZombiesGamemode;
 import parallelmc.pz.utils.ZombieUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 import static parallelmc.pz.utils.ZombieUtils.weightedChoice;
 
@@ -25,15 +32,19 @@ public class GameManager {
     private final HashMap<UUID, ZombiesPlayer> players = new HashMap<>();
     public GameState gameState;
     public ZombiesMap map;
+    private final HashMap<String, ZombiesGamemode> gameModes = new HashMap<>();
+    public ZombiesGamemode currentGamemode;
 
     private final HashSet<UUID> volunteerPool = new HashSet<>();
-
     private final HashSet<UUID> voteStart = new HashSet<>();
 
     public GameManager(Plugin plugin, ZombiesMap map) {
         this.plugin = plugin;
         this.gameState = GameState.PREGAME;
         this.map = map;
+        this.gameModes.put("last_survivor_standing", new LastSurvivorGamemode(plugin));
+        this.gameModes.put("survival", new SurvivalGamemode(plugin));
+        this.currentGamemode = gameModes.get("last_survivor_standing");
         doPregame();
     }
 
@@ -54,7 +65,7 @@ public class GameManager {
                 if (DisguiseAPI.isDisguised(player)) {
                     DisguiseAPI.undisguiseToAll(player);
                 }
-                z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3));
+                z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3), currentGamemode.getName());
                 player.setFoodLevel(23);
                 if (player.getLocation().getBlockY() < -64) {
                     player.teleport(map.lobby);
@@ -84,7 +95,12 @@ public class GameManager {
             int countdown = 15;
             @Override
             public void run() {
-                players.forEach((p, z) -> z.updateStartingBoard(countdown));
+                players.forEach((p, z) -> {
+                    z.updateStartingBoard(countdown);
+                    if (countdown < 5) {
+                        z.getMcPlayer().playSound(Sound.sound(Key.key("block.note_block.pling"), Sound.Source.MASTER, 0.5f, 0.9f));
+                    }
+                });
                 if (countdown <= 0) {
                     // choose random player to become a zombie
                     ZombiesPlayer target;
@@ -103,6 +119,15 @@ public class GameManager {
                     target.makeZombie(true);
                     gameState = GameState.PLAY;
                     doGame();
+                    players.forEach((p, z) -> {
+                        z.getMcPlayer().playSound(Sound.sound(Key.key("entity.ender_dragon.growl"), Sound.Source.MASTER, 0.5f, 0.9f));
+                        if (z.getTeam() == Team.ZOMBIE) {
+                            z.getMcPlayer().showTitle(currentGamemode.getZombieTitle());
+                        }
+                        else {
+                            z.getMcPlayer().showTitle(currentGamemode.getSurvivorTitle());
+                        }
+                    });
                     this.cancel();
                 }
                 countdown--;
@@ -112,33 +137,23 @@ public class GameManager {
     }
 
     private void doGame() {
-        this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (gameState != GameState.PLAY) {
-                ParallelZombies.log(Level.SEVERE, "Game loop running during " + gameState + ". This shouldn't be happening!");
-                return;
-            }
-            players.forEach((p, z) -> {
-                z.updateBoard(getSurvivorsLeft(), getZombiesLeft());
-                z.getMcPlayer().setFoodLevel(23);
-            });
-
-        }, 0L, 20L);
+        this.currentGamemode.doGame();
 
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (getSurvivorsLeft() == 1) {
+            if (currentGamemode.winCondition()) {
                 endGame(GameEndReason.NORMAL);
             }
         }, 0L, 1L);
 
         // TODO: try and scale for number of players
         this.plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            for (Location loc : map.getAllZombieSpawnPoints())
+            for (Location loc : ParallelZombies.gameManager.map.getAllZombieSpawnPoints())
                 for (int i = 0; i < ZombieUtils.rng.nextInt(1, 4); i++)
-                    spawnZombie(loc);
+                    ParallelZombies.gameManager.spawnZombie(loc);
         }, 0L, 240L);
     }
 
-    private void spawnZombie(Location spawn) {
+    public void spawnZombie(Location spawn) {
         Zombie zombie = (Zombie)map.world.spawnEntity(spawn, EntityType.ZOMBIE);
         zombie.setAdult();
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0));
@@ -156,12 +171,7 @@ public class GameManager {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         this.gameState = GameState.ENDING;
         if (reason == GameEndReason.NORMAL) {
-            ZombiesPlayer winner = players.values().stream().filter(x -> x.getTeam() == Team.SURVIVOR).findFirst().orElse(null);
-            if (winner == null) {
-                ParallelZombies.log(Level.SEVERE, "Failed to retrieve the winning player!");
-                return;
-            }
-            ParallelZombies.sendMessage(winner.getMcPlayer().getName() + " is the winner!");
+            currentGamemode.endGame();
         }
         else if (reason == GameEndReason.NOT_ENOUGH_PLAYERS) {
             ParallelZombies.sendMessage("Ending the game early as there are not enough players to continue.");
@@ -269,6 +279,26 @@ public class GameManager {
 
         return weightedChoice(arr);
 
+    }
+
+    public void runForEachPlayer(Consumer<ZombiesPlayer> action) {
+        players.values().forEach(action);
+    }
+
+    public Stream<ZombiesPlayer> filterPlayers(Predicate<ZombiesPlayer> predicate) {
+        return players.values().stream().filter(predicate);
+    }
+
+    public boolean setGameMode(String modeID) {
+        ZombiesGamemode mode = gameModes.get(modeID);
+        if (mode == null)
+            return false;
+        currentGamemode = mode;
+        return true;
+    }
+
+    public List<String> getGameModes() {
+        return gameModes.keySet().stream().toList();
     }
 
     public void addVolunteer(Player player) {

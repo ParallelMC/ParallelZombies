@@ -19,3 +19,6 @@ commands:
   votestart:
     description: Vote to start the game
     usage: /votestart
+  setmode:
+    description: Force sets the current gamemode
+    usage: /setmode (gamemode)

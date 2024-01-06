@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import parallelmc.pz.gamemodes.SurvivalGamemode;
 
 import java.util.List;
 
@@ -36,12 +37,15 @@ public class ZombiesPlayer {
         this.leapCooldown = false;
     }
 
-    public void updateLobbyBoard(int curVotes, int neededVotes) {
+    public void updateLobbyBoard(int curVotes, int neededVotes, String gameMode) {
         this.board.updateLines(
                 "",
                 "§eVotes needed to start",
                 "§6" + curVotes + "/" + neededVotes,
-                "§6/votestart"
+                "§6/votestart",
+                "",
+                "§eCurrent Gamemode",
+                "§6" + gameMode
         );
     }
 
@@ -53,15 +57,8 @@ public class ZombiesPlayer {
         );
     }
 
-    public void updateBoard(int survivorsLeft, int zombiesLeft) {
-        this.board.updateLines(
-                "",
-                "§aSurvivors",
-                "§e" + survivorsLeft,
-                "",
-                "§cZombies",
-                "§e" + zombiesLeft
-        );
+    public void updateBoard(String... lines) {
+        this.board.updateLines(lines);
     }
 
     public void updateEndingBoard(int countdown) {
@@ -116,7 +113,13 @@ public class ZombiesPlayer {
         equipZombie();
         this.team = Team.ZOMBIE;
         player.teleport(ParallelZombies.gameManager.map.getZombieSpawnPoint());
-        ParallelZombies.sendMessage(player.getName() + " has turned into a zombie!");
+        if (!alphaZombie && ParallelZombies.gameManager.currentGamemode.getName().equalsIgnoreCase("survival")) {
+            ParallelZombies.sendMessage(player.getName() + " has turned into a zombie! (+1 minute)");
+            ((SurvivalGamemode)ParallelZombies.gameManager.currentGamemode).addTime(60);
+        }
+        else {
+            ParallelZombies.sendMessage(player.getName() + " has turned into a zombie!");
+        }
     }
 
     public void equipSurvivor() {
