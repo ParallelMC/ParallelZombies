@@ -111,6 +111,9 @@ public class GameManager {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         voteStart.clear();
         voteGamemode.clear();
+        for (Map.Entry<String, Integer> m : gamemodeVotes.entrySet()) {
+            m.setValue(0);
+        }
         isGamemodeForced = false;
         players.forEach((p, z) -> {
             z.equipSurvivor();
