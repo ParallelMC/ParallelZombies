@@ -37,16 +37,33 @@ public class ZombiesPlayer {
         this.leapCooldown = false;
     }
 
-    public void updateLobbyBoard(int curVotes, int neededVotes, String gameMode) {
-        this.board.updateLines(
-                "",
-                "§eVotes needed to start",
-                "§6" + curVotes + "/" + neededVotes,
-                "§6/votestart",
-                "",
-                "§eCurrent Gamemode",
-                "§6" + gameMode
-        );
+    public void updateLobbyBoard(int curVotes, int neededVotes, String gameMode, int gameModeVotes) {
+        if (gameModeVotes == -1) {
+            this.board.updateLines(
+                    "",
+                    "§eVotes needed to start",
+                    "§6" + curVotes + "/" + neededVotes,
+                    "§6/votestart",
+                    "",
+                    "§eCurrent Gamemode",
+                    "§6" + gameMode,
+                    "§6Forced by admin",
+                    "§6/votemode"
+            );
+        }
+        else {
+            this.board.updateLines(
+                    "",
+                    "§eVotes needed to start",
+                    "§6" + curVotes + "/" + neededVotes,
+                    "§6/votestart",
+                    "",
+                    "§eCurrent Gamemode",
+                    "§6" + gameMode,
+                    "§6" + gameModeVotes + " votes",
+                    "§6/votemode"
+            );
+        }
     }
 
     public void updateStartingBoard(int countdown) {

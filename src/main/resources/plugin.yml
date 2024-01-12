@@ -22,3 +22,6 @@ commands:
   setmode:
     description: Force sets the current gamemode
     usage: /setmode (gamemode)
+  votemode:
+    description: Vote for the current gamemode
+    usage: /votemode (gamemode)

@@ -17,8 +17,8 @@ public class SetMode implements CommandExecutor, TabCompleter {
             if (args.length != 1)
                 return false;
             if (ParallelZombies.gameManager.gameState == GameState.PREGAME) {
-                if (ParallelZombies.gameManager.setGameMode(args[0])) {
-                    commandSender.sendMessage(createMessage("Gamemode changed successfully."));
+                if (ParallelZombies.gameManager.forceGameMode(args[0])) {
+                    commandSender.sendMessage(createMessage("Gamemode forced successfully."));
                 }
                 else {
                     commandSender.sendMessage(createMessage("Failed to change the gamemode, ensure that the specified gamemode exists."));

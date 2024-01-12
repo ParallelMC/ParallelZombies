@@ -46,6 +46,7 @@ public class ParallelZombies extends JavaPlugin {
         this.getCommand("volunteer").setExecutor(new Volunteer());
         this.getCommand("votestart").setExecutor(new VoteStart());
         this.getCommand("setmode").setExecutor(new SetMode());
+        this.getCommand("votemode").setExecutor(new VoteMode());
 
         // todo: this should be dynamic
         World world = this.getServer().getWorld("parallel-zombies");

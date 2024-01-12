@@ -34,9 +34,13 @@ public class GameManager {
     public ZombiesMap map;
     private final HashMap<String, ZombiesGamemode> gameModes = new HashMap<>();
     public ZombiesGamemode currentGamemode;
+    private boolean isGamemodeForced;
 
     private final HashSet<UUID> volunteerPool = new HashSet<>();
     private final HashSet<UUID> voteStart = new HashSet<>();
+    private final HashSet<UUID> voteGamemode = new HashSet<>();
+    private final HashMap<String, Integer> gamemodeVotes = new HashMap<>();
+
 
     public GameManager(Plugin plugin, ZombiesMap map) {
         this.plugin = plugin;
@@ -45,6 +49,8 @@ public class GameManager {
         this.gameModes.put("last_survivor_standing", new LastSurvivorGamemode(plugin));
         this.gameModes.put("survival", new SurvivalGamemode(plugin));
         this.currentGamemode = gameModes.get("last_survivor_standing");
+        this.isGamemodeForced = false;
+        gameModes.forEach((n, m) -> gamemodeVotes.put(n, 0));
         doPregame();
     }
 
@@ -65,7 +71,26 @@ public class GameManager {
                 if (DisguiseAPI.isDisguised(player)) {
                     DisguiseAPI.undisguiseToAll(player);
                 }
-                z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3), currentGamemode.getName());
+                if (isGamemodeForced) {
+                    z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3), currentGamemode.getName(), -1);
+                }
+                else {
+                    String winningMode = "";
+                    int winningVotes = -1;
+                    for (Map.Entry<String, Integer> mode : gamemodeVotes.entrySet()) {
+                        if (mode.getValue() > winningVotes) {
+                            winningMode = mode.getKey();
+                            winningVotes = mode.getValue();
+                        }
+                    }
+                    if (winningVotes == -1) {
+                        ParallelZombies.log(Level.SEVERE, "gamemodeVotes set is empty when calculating vote winner!");
+                    }
+                    else {
+                        currentGamemode = gameModes.get(winningMode);
+                        z.updateLobbyBoard(voteStart.size(), Math.max(players.size() - 1, 3), currentGamemode.getName(), winningVotes);
+                    }
+                }
                 player.setFoodLevel(23);
                 if (player.getLocation().getBlockY() < -64) {
                     player.teleport(map.lobby);
@@ -85,6 +110,8 @@ public class GameManager {
     public void startGame() {
         this.plugin.getServer().getScheduler().cancelTasks(plugin);
         voteStart.clear();
+        voteGamemode.clear();
+        isGamemodeForced = false;
         players.forEach((p, z) -> {
             z.equipSurvivor();
             z.getMcPlayer().teleport(map.getPlayerSpawnPoint());
@@ -289,11 +316,13 @@ public class GameManager {
         return players.values().stream().filter(predicate);
     }
 
-    public boolean setGameMode(String modeID) {
+    public boolean forceGameMode(String modeID) {
         ZombiesGamemode mode = gameModes.get(modeID);
         if (mode == null)
             return false;
+        isGamemodeForced = true;
         currentGamemode = mode;
+        ParallelZombies.sendMessage("The gamemode has been forced to " + currentGamemode.getName() + "!");
         return true;
     }
 
@@ -321,7 +350,27 @@ public class GameManager {
         return voteStart.contains(player.getUniqueId());
     }
 
+
     public int currentVotesToStart() { return voteStart.size(); }
+
+    public void addVoteGamemode(Player player, String modeID) {
+        if (!gameModes.containsKey(modeID)) {
+            ParallelZombies.log(Level.WARNING, "Player tried to vote for unknown mode " + modeID);
+            return;
+        }
+        voteGamemode.add(player.getUniqueId());
+        int votes = gamemodeVotes.get(modeID);
+        gamemodeVotes.put(modeID, votes + 1);
+        ParallelZombies.sendMessage(player.getName() + " voted for the " + gameModes.get(modeID).getName() + " gamemode! (" + (votes + 1) + " votes)");
+    }
+
+    public boolean hasVotedForGamemode(Player player) {
+        return voteGamemode.contains(player.getUniqueId());
+    }
+
+    public boolean hasGamemodeBeenForced() {
+        return isGamemodeForced;
+    }
 
     public ZombiesPlayer getPlayer(Player player) { return players.get(player.getUniqueId()); }
 
